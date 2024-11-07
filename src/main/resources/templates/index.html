@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+
+<!-- TODO: importo il namespace xml di thymeleaf  -->
+<html xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width-device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- TODO: importo i miei CSS  -->
+    <link rel="stylesheet" th:href="@{/css/main.css}" />
+
+    </head>
+
+<body>
+    <h1>STUDIO MEDICO ASSOCIATO</h1>
+    <h3 th:text="${intestazione}"></h3>
+    <h5 th:text="${saluti}"></h5>
+    <p></p>
+</body>
+</html>
