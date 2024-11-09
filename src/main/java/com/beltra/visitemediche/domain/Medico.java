@@ -1,17 +1,24 @@
+package com.beltra.visitemediche.domain;
+
 import jakarta.persistence.*;
-import java.util.List;
 
-import com.beltra.visitemediche.domain.*;
+import java.util.HashSet;
+import java.util.Set;
 
+
+// TODO: specifico questa come una classe di entita'
 @Entity
-@Table(name = "Medico")
+//TODO:  specifico il nome della tabella (normalmente, se nome della classe = nome tabella allora non mi serve la @Table)
+@Table(name = "medici")
+
 public class Medico {
-
+    // TODO: indico che "codice" e' la mia chiave primaria
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // oppure altro tipo di strategia di generazione, se necessario
-    @Column(name = "codice")
-    private Long codice;
+    // TODO: specifico l'esatto nome della colonna nella tabella. Non puo' essere null
+    @Column(name = "codice", nullable = false)
+    private String codice;
 
+    // TODO: specifico l'esatto nome della colonna nella tabella. Non puo' essere null
     @Column(name = "cognome", nullable = false)
     private String cognome;
 
@@ -21,26 +28,34 @@ public class Medico {
     @Column(name = "citta", nullable = false)
     private String citta;
 
-    // Relazione uno-a-molti con Paziente
-    @OneToMany(mappedBy = "medico", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Paziente> pazienti;
 
-    // Costruttori, getter e setter
+    // TODO: gestione relazione 1 ----> N
+    //       MEDICO 1  ---- <visita> ---> N PAZIENTI
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            mappedBy = "medico",
+            orphanRemoval = true)
+    private Set<Paziente> pazienti = new HashSet<>();
 
+
+
+    // COSTRUTTORI
     public Medico() {}
 
-    public Medico(String cognome, String nome, String citta) {
+    public Medico(String cognome, String nome, String citta, Set<Paziente> pazienti) {
         this.cognome = cognome;
         this.nome = nome;
         this.citta = citta;
+        this.pazienti = pazienti;
     }
 
-    // Getters e Setters
-    public Long getCodice() {
+
+    // GETTERS & SETTERS
+    public String getCodice() {
         return codice;
     }
 
-    public void setCodice(Long codice) {
+    public void setCodice(String codice) {
         this.codice = codice;
     }
 
@@ -68,11 +83,11 @@ public class Medico {
         this.citta = citta;
     }
 
-    public List<Paziente> getPazienti() {
+    public Set<Paziente> getPazienti() {
         return pazienti;
     }
 
-    public void setPazienti(List<Paziente> pazienti) {
+    public void setPazienti(Set<Paziente> pazienti) {
         this.pazienti = pazienti;
     }
 }

@@ -1,26 +1,44 @@
+package com.beltra.visitemediche.domain;
+
 import jakarta.persistence.*;
+
+import com.beltra.visitemediche.domain.*;
 
 @Entity
 @Table(name = "Paziente")
 public class Paziente {
 
-    @Id
-    @Column(name = "codice_fiscale")
+    @Id // chiave primaria
+    @Column(name = "codice_fiscale") // la colonna tabella a DB ha nome "codice_fiscale"
     private String codiceFiscale;
 
-    @Column(name = "cognome", nullable = false)
+    @Column(name = "cognome", nullable = false) // la colonna tabella a DB ha nome "cognome"
     private String cognome;
 
     @Column(name = "nome", nullable = false)
     private String nome;
 
-    // Relazione molti-a-uno con Medico
-    @ManyToOne
-    @JoinColumn(name = "medico", nullable = false) // 'medico' è la chiave esterna in Paziente che si riferisce a Medico.codice
+    // TODO:
+    //   Relazione molti-a-uno con Medico
+    @ManyToOne //
+    @JoinColumn(name = "medico", // 'medico' è la chiave esterna in Paziente che si riferisce a 'Medico.codice'
+            nullable = false,
+            referencedColumnName = "codice")
     private Medico medico;
 
-    // Costruttori, getter e setter
 
+
+    // TODO: gestione relazione 1:1
+    //      MEDICO  1--------1 ANAGRAFICA
+    // TODO: La relazione che intercorre tra anagrafiche e medici e' 1:1 quindi uso la @OneToOne
+    @OneToOne(
+            mappedBy = "paziente"
+    )
+    //@PrimaryKeyJoinColumn
+    private Anagrafica anagrafica;
+
+
+    // COSTRUTTORI
     public Paziente() {}
 
     public Paziente(String codiceFiscale, String cognome, String nome, Medico medico) {
@@ -30,7 +48,8 @@ public class Paziente {
         this.medico = medico;
     }
 
-    // Getters e Setters
+
+    // GETTERS & SETTERS
     public String getCodiceFiscale() {
         return codiceFiscale;
     }
