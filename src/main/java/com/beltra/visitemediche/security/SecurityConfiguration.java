@@ -1,0 +1,184 @@
+package com.beltra.visitemediche.security;
+
+import lombok.SneakyThrows;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfiguration {
+
+    /** Metodo di salvataggio degli utenti in memoria.
+     *  a titolo di esempio. All'interno di questo metodo
+     *  creo gli utenti e i relativi ruoli degli stessi
+     *  */
+    @Bean
+    InMemoryUserDetailsManager userDetailsManager() {
+
+        /** Utente amministratore:
+         *  può accedere in lettura, ma anche fare CRUD dei pazienti
+         * */
+        UserDetails admin = User.builder()
+                .username("Marco")
+                .password(new BCryptPasswordEncoder().encode("VerySecretPwd"))
+                .roles("ADMIN", "USER") // Doppio ruolo
+                .build();
+
+        /** Utente comune:
+         *  può accedere solo alle schermate di lettura dei pazienti
+         * */
+        UserDetails user = User.builder()
+                .username("romafaso")
+                .password(new BCryptPasswordEncoder().encode("123Stella"))
+                .roles("USER")
+                .build();
+
+        /** Ritorno  */
+        return new InMemoryUserDetailsManager(admin, user);
+    }
+
+
+
+    /** Bean necessario per attivare (fare il code injection) del {@link BCryptPasswordEncoder} */
+    @Bean
+    @SneakyThrows
+    BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+
+    /** TODO: Uno dei metodi più importanti, perchè mi consente di configurare i diversi aspetti che riguardano la sicurezza
+     *        della mia applicazione.
+     *        <br>
+     *        La prima configurazione che setto con questo bean è quella che riguarda gli endpoint che l'utente può accedere senza
+     *        autenticarsi, e quindi accedere in modalità completamente anonima.
+     *        <br>
+     *        Poi specificherò a quali endpoint potrà accedere il relativo utente user,
+     *        <br>
+     *        il relativo utente admin
+     *        <br>
+     *        ecc..
+     *        */
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+        .authorizeRequests( authz ->
+        {
+        // TODO: endpoint che si possono accedere in maniera anonima
+            authz.requestMatchers(
+                    new AntPathRequestMatcher("/login/**"), // endpoint "/login/**" è accessibile in maniera del tutto anonima
+                    new AntPathRequestMatcher("/js/**"),    // anche gli endpoint che mi permettono di accedere alle risorse
+                    new AntPathRequestMatcher("/css/**"),   // i ** indicano "qualsiasi ulteriore path sia presente Es) in /css/"
+                    new AntPathRequestMatcher("/fonts/**"),
+                    new AntPathRequestMatcher("/plugins/**"),
+                    new AntPathRequestMatcher("/svg/**"),
+                    new AntPathRequestMatcher("/fonts/**"),
+                    new AntPathRequestMatcher("/images/**")
+            ).permitAll(); // per poter accedere in modalità anonima
+
+            //TODO: endpoint che sono accessibili solo da utente amministratore
+            authz.requestMatchers(
+                    new AntPathRequestMatcher("/pazienti/cerca/**"),
+                    new AntPathRequestMatcher("/pazienti/pazienteDettagli/**"),
+                    new AntPathRequestMatcher("/pazienti/modifica/medico"),
+                    new AntPathRequestMatcher("/articoli"),
+                    new AntPathRequestMatcher("/saluto")
+            ).hasRole("ADMIN");
+
+            // TODO: qualsiasi altra richiesta che riguardi qualunque altro endpoint devo essere
+            //       almeno autenticato (cioè aver inserito username e password)
+            authz.anyRequest().authenticated();
+        })
+
+
+    // TODO: specifico quale form di login devo usare per permettere l'inserimento di username
+    //       e password --> non devo usare il form di login di default ovviamente,
+    //       ma il mio form di login
+        .formLogin(
+                form -> form
+                .loginPage("/login")                // TODO: endpoint che sarà usato per poter poter apripre la mia pagina di login
+                .loginProcessingUrl("/autentica")   // TODO: "/autentica" rappresenta nella vista il blocco di codice
+                                //  ...
+                                // <form action=# th:action="@{/autentica}" method=post>
+                                // ...
+                                                    // TODO: "/autentica" gestisce il th:action che dice "quando fai il submit del form viene lanciato '/autentica'", che e' contenuto sempre dentro l'endpoint "/login" (infatti nella action dell'HTML ho #
+                .usernameParameter("name")          // TODO: rappresenta la mappatura tra il l'attributo name HTML del campo in cui inserisco lo username e il metodo
+                                                    // TODO: usernameParameter("name") ==> "name" deve essere uguale sia in questo metodo, sia nell'attributo "name" dell'HTML della vista.
+                                                    // Se invece avessi usato il nome di default (che è "username") non avrei dovuto richiamare questo metodo
+                // .passwordParameter("password")   // Lo stesso principio vale per il metodo passwordParameter("password"), che di default vale "password"
+                                                    // e siccome io nell'HTML come attributo name del campo della password ho usato "password", non è necessario richiamarlo
+
+
+                .successHandler( authenticationSuccessHandler() ) // TODO: gestore dell'evento successo: ho inserito username e password, quello che ho inserito
+                                                                  //  è coerente con quanto ho specificato nelle configurazioni, in questo caso, del metodo che ho creato
+                                                                 //   userDetailsManager(), quindi la mia applicazione in caso di successo mi deve far andare in una determinata pagina
+                                                                 //   questo evento è gestito da un opportuno metodo che creo, in questo caso chiamato authenticationSuccessHandler(),
+                                                                 //   che mi creo nella classe CustomSuccessHandler.
+                                                                 //   ==> Devo riportare in questa classe ( SecurityConfiguration ) il Bean che istanzia un nuovo oggetto di tipo CustomSuccessHandler.
+
+                .failureHandler( authenticationFailureHandler() ) // TODO: gestore dell'evento di fallimento: funzione opposta rispetto al gestore del successo.
+                                                                  //  Se inserisco username e password errati devo gestire in modo opportuno questo evento attraverso
+                                                                  //  il metodo authenticationFailureHandler() ---> creo la classe CustomAuthenticationFailureHandler
+                                                                  //  ==> Devo riportare in questa classe ( SecurityConfiguration ) il Bean che istanzia un nuovo oggetto di tipo CustomAuthenticationFailureHandler
+
+
+                )                                              // TODO: gestisco i casi nei quali tento di entrare in una pagina in cui non posso entrare, perchè ad es., non sono amministratore
+            .exceptionHandling( ex -> ex                       //  infatti ho predisposto sopra una serie di endpoint che non sono accessibili all'utente con role "USER"
+                .accessDeniedHandler( accessDeniedHandler() )  //  --> aggiungo la parte di gestione degli errori, che mi permette di attivare l'accessDeniedHandler
+                                                               //  --> richiede di creare la classe CustomAccessDeniedHandler
+                                                               //  ==> Devo riportare in questa classe ( SecurityConfiguration ) il Bean che istanzia un nuovo oggetto di tipo CustomAuthenticationFailureHandler
+        );
+    // TODO: ho finito con i parametri di configurazione di base
+
+    // TODO: restituisco http.build()
+        return http.build();
+    }
+
+
+
+
+
+
+
+
+    /** Crea il Bean che istanza la {@link CustomSuccessHandler} che mi fa saltare nella pagina index passando lo username
+     *  <br>
+     *  In particolare mi consente di usare in questa classe il metodo authenticationSuccessHandler()
+     * */
+    @Bean
+    AuthenticationSuccessHandler authenticationSuccessHandler() {
+        return new CustomSuccessHandler();
+    }
+
+
+    /** Crea il Bean che istanza la {@link CustomAuthenticationFailureHandler} che mi fa saltare nella pagina index passando lo username
+     *  <br>
+     *  In particolare mi consente di usare in questa classe il metodo onAuthenticationFailure()
+     * */
+    @Bean
+    AuthenticationFailureHandler authenticationFailureHandler() {
+        return new CustomAuthenticationFailureHandler();
+    }
+
+
+    /** Crea il Bean che istanza la {@link CustomAccessDeniedHandler} che mi fa saltare nella pagina index passando lo username
+     *  <br>
+     *  In particolare mi consente di usare in questa classe il metodo handle()
+     * */
+    @Bean
+    AccessDeniedHandler accessDeniedHandler() {
+        return new CustomAccessDeniedHandler();
+    }
+
+}

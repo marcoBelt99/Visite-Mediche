@@ -1,11 +1,17 @@
 package com.beltra.visitemediche.domain;
 
 import jakarta.persistence.*;
-
-import com.beltra.visitemediche.domain.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Table(name = "Paziente")
+@Table(name = "pazienti")
+@Getter // TODO: uso del Lombok
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Paziente {
 
     @Id // chiave primaria
@@ -19,13 +25,12 @@ public class Paziente {
     private String nome;
 
     // TODO:
-    //   Relazione molti-a-uno con Medico
+    //   Relazione N:1 con Medico  (molti-ad-uno)
     @ManyToOne //
     @JoinColumn(name = "medico", // 'medico' è la chiave esterna in Paziente che si riferisce a 'Medico.codice'
             nullable = false,
             referencedColumnName = "codice")
     private Medico medico;
-
 
 
     // TODO: gestione relazione 1:1
@@ -34,51 +39,6 @@ public class Paziente {
     @OneToOne(
             mappedBy = "paziente"
     )
-    //@PrimaryKeyJoinColumn
     private Anagrafica anagrafica;
 
-
-    // COSTRUTTORI
-    public Paziente() {}
-
-    public Paziente(String codiceFiscale, String cognome, String nome, Medico medico) {
-        this.codiceFiscale = codiceFiscale;
-        this.cognome = cognome;
-        this.nome = nome;
-        this.medico = medico;
-    }
-
-
-    // GETTERS & SETTERS
-    public String getCodiceFiscale() {
-        return codiceFiscale;
-    }
-
-    public void setCodiceFiscale(String codiceFiscale) {
-        this.codiceFiscale = codiceFiscale;
-    }
-
-    public String getCognome() {
-        return cognome;
-    }
-
-    public void setCognome(String cognome) {
-        this.cognome = cognome;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public Medico getMedico() {
-        return medico;
-    }
-
-    public void setMedico(Medico medico) {
-        this.medico = medico;
-    }
 }

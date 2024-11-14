@@ -1,16 +1,23 @@
 package com.beltra.visitemediche.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
 
 
-// TODO: specifico questa come una classe di entita'
-@Entity
-//TODO:  specifico il nome della tabella (normalmente, se nome della classe = nome tabella allora non mi serve la @Table)
-@Table(name = "medici")
 
+@Entity // TODO: specifico questa come una classe di entita'
+@Table(name = "medici") //TODO:  specifico il nome della tabella,
+// (normalmente, se nome della classe = nome tabella allora non mi serve la @Table)
+@Getter // TODO: uso del Lombok
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Medico {
     // TODO: indico che "codice" e' la mia chiave primaria
     @Id
@@ -37,57 +44,4 @@ public class Medico {
             orphanRemoval = true)
     private Set<Paziente> pazienti = new HashSet<>();
 
-
-
-    // COSTRUTTORI
-    public Medico() {}
-
-    public Medico(String cognome, String nome, String citta, Set<Paziente> pazienti) {
-        this.cognome = cognome;
-        this.nome = nome;
-        this.citta = citta;
-        this.pazienti = pazienti;
-    }
-
-
-    // GETTERS & SETTERS
-    public String getCodice() {
-        return codice;
-    }
-
-    public void setCodice(String codice) {
-        this.codice = codice;
-    }
-
-    public String getCognome() {
-        return cognome;
-    }
-
-    public void setCognome(String cognome) {
-        this.cognome = cognome;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getCitta() {
-        return citta;
-    }
-
-    public void setCitta(String citta) {
-        this.citta = citta;
-    }
-
-    public Set<Paziente> getPazienti() {
-        return pazienti;
-    }
-
-    public void setPazienti(Set<Paziente> pazienti) {
-        this.pazienti = pazienti;
-    }
 }
