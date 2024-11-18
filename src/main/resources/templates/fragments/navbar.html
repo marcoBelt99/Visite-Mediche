@@ -43,14 +43,50 @@
                                         </div>
                                     </div>
                                 </div>
-                                <a class="btn btn-primary btn-icon btn-full" href="#" title="Accedi all'area personale" aria-label="Accedi all'area personale">
-                <span class="rounded-icon">
-                  <svg class="icon icon-primary">
-                     <use th:href="@{/svg/sprites.svg#it-user}"></use>
-                  </svg>
-                </span>
-                                    <span class="d-none d-lg-block">Accedi all'area personale</span>
-                                </a>
+
+        <!-- ######################################################## -->
+        <!-- TODO: bottone login/logout: da trasformare in dropdown   -->
+        <!-- ######################################################## -->
+                                <!-- TODO: UTENTE NON LOGGATO -->
+                                <div th:if="${userName == null}" >
+                                    <a class="btn btn-primary btn-icon btn-full" th:href="@{/login}" title="Accedi all'area personale" aria-label="Accedi all'area personale">
+                                        <span class="rounded-icon">
+                                          <svg class="icon icon-primary">
+                                             <use th:href="@{/svg/sprites.svg#it-user}"></use>
+                                          </svg>
+                                        </span>
+                                        <span class="d-none d-lg-block">Accedi all'area personale</span>
+                                    </a>
+                                </div>
+
+                                <!-- TODO: UTENTE LOGGATO -->
+                                <div th:if="${userName != null}">
+                                    <div class="btn-group">
+                                        <a type="button" class="btn btn-primary btn-icon dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span class="rounded-icon">
+                                                <svg class="icon icon-primary">
+                                                    <use th:href="@{/svg/sprites.svg#it-user}"></use>
+                                                </svg>
+                                            </span>
+                                            <span th:text="${userName}"></span>
+                                            <svg class="icon-expand icon icon-sm icon-light">
+                                                <use th:href="@{/svg/sprites.svg#it-expand}"></use>
+                                            </svg>
+                                        </a>
+                                        <div class="dropdown-menu">
+                                            <div class="link-list-wrapper">
+                                                <ul class="link-list">
+                                                    <li><a class="dropdown-item list-item" href="#"><span>Azione 1</span></a></li>
+                                                    <li><a class="dropdown-item list-item" href="#"><span>Azione 2</span></a></li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li><a class="dropdown-item list-item" th:href="@{/logout}"><span>Logout</span></a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
                             </div>
                         </div>
                     </div>
@@ -66,10 +102,7 @@
                             <div class="it-header-center-content-wrapper">
                                 <div class="it-brand-wrapper">
                                     <a href="/bootstrap-italia/docs/esempi/comuni/template-homepage/">
-                                        <svg class="icon" aria-hidden="true">
-<!--                                            <use th:href="@{/svg/sprites.svg#it-pa}"></use>-->
-                                            <use th:href="@{/svg/asl-icon.svg}"></use>
-                                        </svg>
+                                            <img th:src="@{/svg/asl-icon.svg}" alt="Icona ASL" class="icon">
                                         <div class="it-brand-text">
                                             <div class="it-brand-title">Studio Medico Associato</div>
                                             <div class="it-brand-tagline d-none d-md-block">Portale per medici e pazienti</div>
@@ -122,7 +155,11 @@
                     <div class="row">
                         <div class="col-12">
 
-                            <!-- TODO: start nav-->
+
+<!--########################################-->
+<!-- TODO: start nav-->
+<!--########################################-->
+
                             <nav class="navbar navbar-expand-lg has-megamenu" aria-label="Navigazione principale">
                                 <button
                                         class="custom-navbar-toggler"
@@ -167,8 +204,8 @@
                                                 </a>
                                             </li>
                                             <li class="nav-item ">
-                                                <a class="nav-link " href="/bootstrap-italia/docs/esempi/comuni/template-servizi/">
-                                                    <span>Servizi</span>
+                                                <a class="nav-link " th:href="@{/benvenuto_utente_anonimo}">
+                                                    <span>Benvenuto</span>
 
                                                 </a>
                                             </li>

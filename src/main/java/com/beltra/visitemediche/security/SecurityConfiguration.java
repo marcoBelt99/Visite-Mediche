@@ -30,16 +30,16 @@ public class SecurityConfiguration {
          *  può accedere in lettura, ma anche fare CRUD dei pazienti
          * */
         UserDetails admin = User.builder()
-                .username("Marco")
-                .password(new BCryptPasswordEncoder().encode("VerySecretPwd"))
+                .username("Admin")
+                .password(new BCryptPasswordEncoder().encode("VerySecretPwd")) // BCryptPasswordEncoder richiede di istanziare il bean associato (vedi sotto)
                 .roles("ADMIN", "USER") // Doppio ruolo
                 .build();
 
         /** Utente comune:
-         *  può accedere solo alle schermate di lettura dei pazienti
+         *  può accedere solo alle schermate di lettura dei pazienti ( non può modificarli o eliminarli )
          * */
         UserDetails user = User.builder()
-                .username("romafaso")
+                .username("Marco")
                 .password(new BCryptPasswordEncoder().encode("123Stella"))
                 .roles("USER")
                 .build();
@@ -58,19 +58,23 @@ public class SecurityConfiguration {
     }
 
 
-    /** TODO: Uno dei metodi più importanti, perchè mi consente di configurare i diversi aspetti che riguardano la sicurezza
-     *        della mia applicazione.
+
+
+
+    /** TODO: Uno dei metodi più importanti, perchè <b><u>mi consente di configurare i diversi aspetti che riguardano la sicurezza
+     *        della mia applicazione</u></b>.
      *        <br>
-     *        La prima configurazione che setto con questo bean è quella che riguarda gli endpoint che l'utente può accedere senza
+     *        1. La prima configurazione che setto con questo bean è quella che riguarda gli endpoint che l'utente può accedere senza
      *        autenticarsi, e quindi accedere in modalità completamente anonima.
      *        <br>
-     *        Poi specificherò a quali endpoint potrà accedere il relativo utente user,
+     *        2. Poi specificherò a quali endpoint potrà accedere il relativo utente user,
      *        <br>
-     *        il relativo utente admin
+     *        3. Il relativo utente admin
      *        <br>
      *        ecc..
      *        */
     @Bean
+    @SneakyThrows
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
         .authorizeRequests( authz ->
@@ -80,41 +84,42 @@ public class SecurityConfiguration {
                     new AntPathRequestMatcher("/login/**"), // endpoint "/login/**" è accessibile in maniera del tutto anonima
                     new AntPathRequestMatcher("/js/**"),    // anche gli endpoint che mi permettono di accedere alle risorse
                     new AntPathRequestMatcher("/css/**"),   // i ** indicano "qualsiasi ulteriore path sia presente Es) in /css/"
-                    new AntPathRequestMatcher("/fonts/**"),
                     new AntPathRequestMatcher("/plugins/**"),
                     new AntPathRequestMatcher("/svg/**"),
                     new AntPathRequestMatcher("/fonts/**"),
-                    new AntPathRequestMatcher("/images/**")
+                    new AntPathRequestMatcher("/images/**"),
+                    new AntPathRequestMatcher("/benvenuto_utente_anonimo") // test di pagina che può vedere un utente anonimo (e' mappata da un opportuno controller  chiamato PublicController)
             ).permitAll(); // per poter accedere in modalità anonima
 
-            //TODO: endpoint che sono accessibili solo da utente amministratore
+            //TODO: endpoint che sono accessibili <b>solo da utente amministratore</b>
             authz.requestMatchers(
                     new AntPathRequestMatcher("/pazienti/cerca/**"),
                     new AntPathRequestMatcher("/pazienti/pazienteDettagli/**"),
                     new AntPathRequestMatcher("/pazienti/modifica/medico"),
                     new AntPathRequestMatcher("/articoli"),
-                    new AntPathRequestMatcher("/saluto")
-            ).hasRole("ADMIN");
+                    new AntPathRequestMatcher("/anagrafiche/**")
+            ).hasRole("ADMIN"); // tutti questi endpoint sono accessibili solo dall'utente che ha il ruolo di ADMIN
 
             // TODO: qualsiasi altra richiesta che riguardi qualunque altro endpoint devo essere
             //       almeno autenticato (cioè aver inserito username e password)
-            authz.anyRequest().authenticated();
+            authz.anyRequest().authenticated(); // tutto il resto dell'app (tranne gli endpoint specifici esclusivi per ADMIN) è accessibile da un utente che abbia fatto log-on
         })
 
 
     // TODO: specifico quale form di login devo usare per permettere l'inserimento di username
     //       e password --> non devo usare il form di login di default ovviamente,
-    //       ma il mio form di login
+    //       ma il mio form di login !!!
         .formLogin(
                 form -> form
                 .loginPage("/login")                // TODO: endpoint che sarà usato per poter poter apripre la mia pagina di login
-                .loginProcessingUrl("/autentica")   // TODO: "/autentica" rappresenta nella vista il blocco di codice
+                .loginProcessingUrl("/autentica")   // TODO: "/autentica" rappresenta nella vista il blocco di codice dentro la vista Thymeleaf del login:
                                 //  ...
                                 // <form action=# th:action="@{/autentica}" method=post>
                                 // ...
-                                                    // TODO: "/autentica" gestisce il th:action che dice "quando fai il submit del form viene lanciato '/autentica'", che e' contenuto sempre dentro l'endpoint "/login" (infatti nella action dell'HTML ho #
+                                                    // TODO: "/autentica" gestisce il th:action che dice "quando fai il submit del form viene lanciato '/autentica'", che e' contenuto sempre dentro l'endpoint "/login" (infatti nella action dell'HTML ho #)
+
                 .usernameParameter("name")          // TODO: rappresenta la mappatura tra il l'attributo name HTML del campo in cui inserisco lo username e il metodo
-                                                    // TODO: usernameParameter("name") ==> "name" deve essere uguale sia in questo metodo, sia nell'attributo "name" dell'HTML della vista.
+                                                    //       usernameParameter("name") ==> "name" deve essere uguale sia in questo metodo, sia nell'attributo "name" dell'HTML della vista.
                                                     // Se invece avessi usato il nome di default (che è "username") non avrei dovuto richiamare questo metodo
                 // .passwordParameter("password")   // Lo stesso principio vale per il metodo passwordParameter("password"), che di default vale "password"
                                                     // e siccome io nell'HTML come attributo name del campo della password ho usato "password", non è necessario richiamarlo

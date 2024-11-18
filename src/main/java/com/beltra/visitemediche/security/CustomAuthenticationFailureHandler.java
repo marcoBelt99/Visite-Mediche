@@ -15,7 +15,8 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
      *  username o password errati
      *  */
     @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
+                                        AuthenticationException exception) throws IOException, ServletException {
         response.sendRedirect("/login?error");
     }
 }

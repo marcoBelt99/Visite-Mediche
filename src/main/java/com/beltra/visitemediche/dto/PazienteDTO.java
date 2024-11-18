@@ -1,6 +1,6 @@
 package com.beltra.visitemediche.dto;
 
-import lombok.AllArgsConstructor;
+import lombok.AllArgsConstructor; // non funziona bene in questo caso perchè decide lui l'ordine con cui mettere i
 import lombok.Getter;
 import lombok.Setter;
 

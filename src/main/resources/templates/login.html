@@ -38,28 +38,34 @@
                 </div>
 
                 <div class="form-group">
-                    <input class="btnSubmit" type="submit">
+                    <input class="btn btn-outline-primary" type="submit">
                 </div>
 
                 <div class="form-group">
                     <a href="#" class="ForgetPwd">Password Dimenticata?</a>
                 </div>
 
+
+                <!-- Controllo di sicurezza per cross site request forgery                -->
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 
+<!-- Controllo se la password inserita e' corretta. param.error è contenuto in  -->
                 <th:block th:if="${param.error != null}">
                     <div class="alert alert-danger">
-<!--                        <p th:text="#{form.login.errlogin.label}"></p>-->
                         <p>Spiacente, la userid o la password sono errati!</p>
                     </div>
                 </th:block>
 
+        <!-- TODO: Se il parametro logout e' stato passato a questa pagina (logout!=null)
+                   significa che e' stato richiesto di fare il logout. Il parametro logout=true
+                   viene settato dal controller LogoutController
+        -->
                 <th:block th:if="${param.logout != null}">
-                    <div class="alert alert-danger">
-<!--                        <p th:text="#{form.login.infologout.label}"></p>-->
+                    <div class="alert alert-success">
                         <p>Logout eseguito con successo!</p>
                     </div>
                 </th:block>
+
             </form>
         </div>
     </div>
@@ -73,7 +79,7 @@
 
 
 <!-- TODO: inserisco un blocco comune per il foot -->
-<div th:insert="~{/fragments/foot.html}"></div>
+<div th:insert="~{/fragments/foot.html :: foot}"></div>
 <p></p>
 </body>
 </html>

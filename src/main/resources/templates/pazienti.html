@@ -17,45 +17,57 @@
 <!-- TODO: inserisco il blocco comune per la navbar  -->
 <div th:insert="~{fragments/navbar.html :: navbar}"></div>
 
-<h1>STUDIO MEDICO ASSOCIATO</h1>
+<div class="container">
+    <h1>STUDIO MEDICO ASSOCIATO</h1>
 
-<h3 th:text="${titolo}"></h3>
-<!--<h5 th:text="${saluti}"></h5>-->
-
-    <table class="table table-hover">
-        <thead>
-        <tr scope="row">
-            <th scope="col"> Codice Fiscale</th>
-            <th scope="col">Nome</th>
-            <th scope="col">Cognome</th>
-            <th scope="col">Medico referente</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr scope="row" th:each="paz: ${pazienti}" >
-            <td th:text="${paz.getCodiceFiscale()}"></td>
-            <td th:text="${paz.getNome()}"></td>
-            <td th:text="${paz.getCognome()}"></td>
-            <td th:text="${paz.getMedico().getNome().concat(' ').concat(paz.getMedico().getCognome())}"></td>
-        </tr>
-        </tbody>
-    </table>
-<br/>
-
-<!-- TODO: test di un componente Bootstrap Italia -->
-<span class="componente-base" data-value="Test Componente">componente base</span>
-<br>
-<div class="primary-bg p-3"><span class="white-color">Testo bianco su background colore primario</span></div>
-<div class="primary-border-color border p-3"><span class="primary-color">Testo colore primario su background con bordo primario</span></div>
-<br>
-<div class="c-line white-color complementary-1-bg-b1">b1</div>
-<br>
+    <h3 th:text="${titolo}"></h3>
 
 
-<br>
+        <table class="table table-hover">
+            <thead>
+            <tr scope="row">
+                <th scope="col"> Codice Fiscale</th>
+                <th scope="col">Nome</th>
+                <th scope="col">Cognome</th>
+                <th scope="col">Medico referente</th>
+                <th scope="col">Dettagli</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr scope="row" th:each="paz: ${pazienti}" >
+                <td th:text="${paz.getCodiceFiscale()}"></td>
+                <td th:text="${paz.getNome()}"></td>
+                <td th:text="${paz.getCognome()}"></td>
+                <td th:text="${paz.getMedico().getNome().concat(' ').concat(paz.getMedico().getCognome())}"></td>
+                <td>
+                    <a th:href="@{/anagrafiche/{codiceFiscale} (codiceFiscale = ${paz.getCodiceFiscale})}"
+                       class="btn btn-primary btn-icon btn-me">
+                        <span class="rounded-icon">
+                            <svg class="icon icon-primary"><use th:href="@{/svg/sprites.svg# it-plus-circle}"></use></svg>
+                        </span>
+                        <span>Dettagli</span>
+                    </a>
+                </td>
 
-<i class="it-arrow-right"></i>
+            </tr>
+            </tbody>
+        </table>
+    <br/>
 
+<!--    &lt;!&ndash; TODO: test di un componente Bootstrap Italia &ndash;&gt;-->
+<!--    <span class="componente-base" data-value="Test Componente">componente base</span>-->
+<!--    <br>-->
+<!--    <div class="primary-bg p-3"><span class="white-color">Testo bianco su background colore primario</span></div>-->
+<!--    <div class="primary-border-color border p-3"><span class="primary-color">Testo colore primario su background con bordo primario</span></div>-->
+<!--    <br>-->
+<!--    <div class="c-line white-color complementary-1-bg-b1">b1</div>-->
+<!--    <br>-->
+
+
+<!--    <br>-->
+
+<!--    <i class="it-arrow-right"></i>-->
+</div>
 
 
 
