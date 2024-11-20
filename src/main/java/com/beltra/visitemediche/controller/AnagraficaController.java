@@ -19,6 +19,7 @@ public class AnagraficaController {
         this.anagraficaService = anagraficaService;
     }
 
+
     @GetMapping("/{codiceFiscale}")
     public String getAnagrafica(@PathVariable String codiceFiscale,
                                 Model model) {

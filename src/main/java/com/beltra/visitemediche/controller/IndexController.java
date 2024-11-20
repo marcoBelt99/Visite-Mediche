@@ -63,8 +63,9 @@ public class IndexController {
                 @CookieValue(name = "user-id") String userId) {
         model.addAttribute("intestazione", String.format("Benvenuto %s nella index page della webapp Studio Medico Associato", userId) );
         model.addAttribute("saluti", saluti);
-        model.addAttribute("userName", userId);
 
+        // TODO: tecnicamente, ora non dovrebbe più essere necessario usare il cookie, dal momento che l'ho centralizzato
+        //model.addAttribute("userName", userId);
 
         return "index";
     }

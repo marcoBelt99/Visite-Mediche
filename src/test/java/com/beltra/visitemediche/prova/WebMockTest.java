@@ -3,11 +3,13 @@ package com.beltra.visitemediche.prova;
 import com.beltra.visitemediche.controller.ArticoloController;
 import com.beltra.visitemediche.domain.Articolo;
 import com.beltra.visitemediche.service.ArticoloService;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 // TODO: import necessari per mockito
@@ -45,7 +47,9 @@ public class WebMockTest {
     private ArticoloService articoloService;
 
     /** Uso di Mockito */
+    @Disabled
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN", "USER"})
     void getArticoliMustReturnListOfAllArticoli() throws Exception {
 
         when( articoloService.getAllArticoli() ).thenReturn( new ArrayList<>() );

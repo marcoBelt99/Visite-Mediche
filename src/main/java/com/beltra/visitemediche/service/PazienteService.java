@@ -33,4 +33,10 @@ public interface PazienteService {
      *  Questo approccio è molto utile per evitare problemi di serializzazione con entità complesse o con relazioni a cascata. */
     PazienteDTO getPazienteDTOByCodiceFiscale(String codiceFiscale);
 
+
+    /** Verifica se esiste effettivamente un medico tramite il codice del medico.
+     * <br>
+     *  Se esiste, vuol dire che può essere assegnato al paziente
+     * */
+    boolean existsMedicoToAssign(String codiceMedico);
 }

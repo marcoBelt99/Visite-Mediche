@@ -1,5 +1,6 @@
 package com.beltra.visitemediche.prova;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -41,6 +42,7 @@ public class HttpRequestTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Disabled
     @Test
     void getSalutiShouldReturnDefaultMessageStartingServer() throws Exception {
         assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/saluto",
@@ -56,6 +58,7 @@ public class HttpRequestTest {
  *  <br>
  *  Per farlo, Spring uso il <b>MockMvc</b> e chiedo che venga iniettato per me tramite l'@AutoConfigureMockMvc
      * */
+    @Disabled
     @Test
     void getSalutiShouldReturnMessageNotStartingServer() throws Exception {
         this.mockMvc

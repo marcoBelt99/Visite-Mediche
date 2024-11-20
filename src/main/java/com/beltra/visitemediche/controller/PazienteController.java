@@ -76,6 +76,8 @@ public class PazienteController {
      *        metodi, GET per recuperare i dati, POST per aggiornarli
      *        Quindi per "/pazienti/modifica/medico" uso sia @GetMapping
      *        che @PostMapping
+     *
+     *  TODO: E' nella parte del @GetMapping che inizializzo il model con model.addAttribute(K, V)
      * */
 
     @GetMapping("/modifica/medico")
@@ -83,6 +85,7 @@ public class PazienteController {
 
         List<Paziente> listaPazienti = pazienteService.getAllPazienti();
         model.addAttribute("listaPazienti",  listaPazienti );
+        model.addAttribute("erroreCodiceMedico", "Spiacente, il codice del medico inserito non esiste.");
 
         return "pazienti_modifica_medico";
     }
@@ -91,14 +94,19 @@ public class PazienteController {
     @PostMapping("/modifica/medico")
     public String modificaMedicoPaziente(
             @RequestParam("codiceFiscaleSelect") String codiceFiscale, // "codiceFiscaleSelect" è il name del codice fiscale dentro la select
-            @RequestParam("codiceMedico") String codiceMedico
-    ) {
+            @RequestParam("codiceMedico") String codiceMedico) {
 
-        // Aggiorna il paziente
-        pazienteService.updateMedicoPazienteByCodiceFiscale(codiceFiscale, codiceMedico);
+        // Se il codice medico inserito esiste
+        if(pazienteService.existsMedicoToAssign( codiceMedico.trim() )) {
+            // Aggiorna il paziente
+            pazienteService.updateMedicoPazienteByCodiceFiscale(codiceFiscale, codiceMedico);
+            // Reindirizzo alla pagina aggiornata
+            return "redirect:/pazienti/cerca/all";
+        }
 
-        // Reindirizzo alla pagina aggiornata
-        return "redirect:/pazienti/cerca/all";
+        // Se il codice medico inserito non esiste, nella vista con Thymeleaf controllo che
+        // il parametro error sia != null e se lo e' visualizzo il div con l'errore
+        return "redirect:/pazienti/modifica/medico?error=true";
     }
 
 

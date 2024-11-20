@@ -2,6 +2,7 @@ package com.beltra.visitemediche.service;
 
 import com.beltra.visitemediche.domain.Paziente;
 import com.beltra.visitemediche.dto.PazienteDTO;
+import com.beltra.visitemediche.repository.MedicoRepository;
 import com.beltra.visitemediche.repository.PazienteRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.PageRequest;
@@ -15,10 +16,13 @@ public class PazienteServiceImpl implements PazienteService {
 
     // TODO: code injection del repository associato
     // TODO: faccio il code injection tramite il costruttore e non tramite autowired
-    private PazienteRepository pazienteRepository;
+    private final PazienteRepository pazienteRepository;
+    private final MedicoRepository medicoRepository;
 
-    public PazienteServiceImpl(PazienteRepository pazienteRepository) {
+    public PazienteServiceImpl(PazienteRepository pazienteRepository,
+                               MedicoRepository medicoRepository) {
         this.pazienteRepository = pazienteRepository;
+        this.medicoRepository = medicoRepository;
     }
 
 
@@ -74,4 +78,8 @@ public class PazienteServiceImpl implements PazienteService {
     }
 
 
+    @Override
+    public boolean existsMedicoToAssign(String codiceMedico) {
+        return medicoRepository.findByCodice(codiceMedico) != null;
+    }
 }

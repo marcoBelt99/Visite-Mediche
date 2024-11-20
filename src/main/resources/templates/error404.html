@@ -17,14 +17,16 @@
 <div th:insert="~{fragments/navbar.html :: navbar}"></div>
 
 
-<div class="container">
-    <div class="card">
-        <h1>STUDIO MEDICO ASSOCIATO</h1>
-        <h3 th:text="${intestazione}"></h3>
-        <h5 th:text="${saluti}"></h5>
-        <h5 th:text="${userName}"></h5>
+<section>
+    <div class="container">
+        <div class="card">
+            <h3 class="mt-4">Oops! Pagina non trovata</h3>
+            <p>Sembra che tu abbia preso una via sbagliata. Non preoccuparti... succede anche ai migliori di noi. Ecco un piccolo consiglio che potrebbe aiutarti a rimetterti in carreggiata.</p>
+            <a th:href="@{/index}" class="btn btn-primary mt-4">Torna alla home</a>
+        </div>
     </div>
-</div>
+</section>
+
 
 
 

@@ -20,7 +20,7 @@ public class SmokeTest {
      *  Voglio controllare se il contesto mi sta creando il controller
      * */
     @Test
-    void contextLoads() throws Exception {
+    void esisteIndexController() throws Exception {
         assertThat( indexController )
         .isNotNull();
     }

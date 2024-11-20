@@ -1,6 +1,7 @@
 package com.beltra.visitemediche;
 
 import com.beltra.visitemediche.domain.Paziente;
+import com.beltra.visitemediche.domain.Utente;
 import com.beltra.visitemediche.service.PazienteService;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -51,7 +52,7 @@ class ApplicationTests {
 
     @Test
     void contextLoads() {
-        /** Test di controllointegrita' (gia' presente di default in Spring Boot).
+        /** Test di controllo integrita' (gia' presente di default in Spring Boot).
          * Fallirà se il contesto dell'applicazione non può essere avviato
          *
          * */

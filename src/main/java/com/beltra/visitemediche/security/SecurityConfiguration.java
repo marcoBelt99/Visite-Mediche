@@ -1,60 +1,87 @@
 package com.beltra.visitemediche.security;
 
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
 
-    /** Metodo di salvataggio degli utenti in memoria.
-     *  a titolo di esempio. All'interno di questo metodo
-     *  creo gli utenti e i relativi ruoli degli stessi
-     *  */
+//    /** Metodo di salvataggio degli utenti in memoria.
+//     *  a titolo di esempio. All'interno di questo metodo
+//     *  creo gli utenti e i relativi ruoli degli stessi
+//     *  */
+//    @Bean
+//    InMemoryUserDetailsManager userDetailsManager() {
+//
+//        /** Utente amministratore:
+//         *  può accedere in lettura, ma anche fare CRUD dei pazienti
+//         * */
+//        UserDetails admin = User.builder()
+//                .username("Admin")
+//                .password(new BCryptPasswordEncoder().encode("VerySecretPwd")) // BCryptPasswordEncoder richiede di istanziare il bean associato (vedi sotto)
+//                .roles("ADMIN", "USER") // Doppio ruolo
+//                .build();
+//
+//        /** Utente comune:
+//         *  può accedere solo alle schermate di lettura dei pazienti ( non può modificarli o eliminarli )
+//         * */
+//        UserDetails user = User.builder()
+//                .username("Marco")
+//                .password(new BCryptPasswordEncoder().encode("123Stella"))
+//                .roles("USER")
+//                .build();
+//
+//        /** Ritorno  */
+//        return new InMemoryUserDetailsManager(admin, user);
+//    }
+
+
+
+    /** @Bean Necessario per salvare a DB la password inserita in modo criptato
+     *  lo richiamo in UtenteServiceImpl
+     * */
     @Bean
-    InMemoryUserDetailsManager userDetailsManager() {
-
-        /** Utente amministratore:
-         *  può accedere in lettura, ma anche fare CRUD dei pazienti
-         * */
-        UserDetails admin = User.builder()
-                .username("Admin")
-                .password(new BCryptPasswordEncoder().encode("VerySecretPwd")) // BCryptPasswordEncoder richiede di istanziare il bean associato (vedi sotto)
-                .roles("ADMIN", "USER") // Doppio ruolo
-                .build();
-
-        /** Utente comune:
-         *  può accedere solo alle schermate di lettura dei pazienti ( non può modificarli o eliminarli )
-         * */
-        UserDetails user = User.builder()
-                .username("Marco")
-                .password(new BCryptPasswordEncoder().encode("123Stella"))
-                .roles("USER")
-                .build();
-
-        /** Ritorno  */
-        return new InMemoryUserDetailsManager(admin, user);
+    @SneakyThrows
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
 
+    /** TODO:  */
+    // Code Injection
+    private UserDetailsService userDetailsService;
 
-    /** Bean necessario per attivare (fare il code injection) del {@link BCryptPasswordEncoder} */
-    @Bean
+    public SecurityConfiguration(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+
+    /** TODO: permette di fare configurazioni globali del mio sistema di autenticazione */
+    @Autowired
     @SneakyThrows
-    BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth
+            .userDetailsService( userDetailsService ) // TODO: quale userDetailsService sto usando
+            //.passwordEncoder( passwordEncoder() );  // per ora non dovrebbe servire farlo così
+            .passwordEncoder( new BCryptPasswordEncoder() );  // TODO: sistema di criptazione che utilizzo
     }
 
 
@@ -143,8 +170,35 @@ public class SecurityConfiguration {
                 .accessDeniedHandler( accessDeniedHandler() )  //  --> aggiungo la parte di gestione degli errori, che mi permette di attivare l'accessDeniedHandler
                                                                //  --> richiede di creare la classe CustomAccessDeniedHandler
                                                                //  ==> Devo riportare in questa classe ( SecurityConfiguration ) il Bean che istanzia un nuovo oggetto di tipo CustomAuthenticationFailureHandler
-        );
+
+
+        ) // ;
     // TODO: ho finito con i parametri di configurazione di base
+
+
+    // TODO: di seguito alcuni tentativi per risolvere il problema della sessione sporca a causa del csrf
+
+    // Sessione
+        .sessionManagement(
+                httpSecuritySessionManagementConfigurer ->
+                        httpSecuritySessionManagementConfigurer
+                        .sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
+
+
+        .csrf(csrf -> csrf
+                .csrfTokenRepository(new HttpSessionCsrfTokenRepository())
+        )
+
+    // Indicazione esplicita della pagina di logout: RIPULISCO SIA LA SESSIONE CHE I COOKIE DI SESSIONE
+        .logout((logout) -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login?logout=true")
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .deleteCookies("JSESSIONID","user-id")
+
+
+        );
 
     // TODO: restituisco http.build()
         return http.build();

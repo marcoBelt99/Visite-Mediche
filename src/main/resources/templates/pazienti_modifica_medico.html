@@ -52,28 +52,28 @@
 
         <!-- Visualizza i dati del paziente dopo la selezione -->
         <div class="row">
-            <div class="input-group  col-md-4">
+            <div class="form-group  col-md-4">
                 <label for="codiceFiscale">Codice Fiscale:</label>
             </div>
-            <div class="input-group  col-md-4">
+            <div class="form-group  col-md-4">
                 <input type="text" id="codiceFiscale" name="codiceFiscale" disabled/>
             </div>
         </div>
 
         <div class="row">
-            <div class="input-group col-md-4">
+            <div class="form-group col-md-4">
                 <label for="nome">Nome:</label>
             </div>
-            <div class="input-group col-md-4">
+            <div class="form-group col-md-4">
                 <input type="text" id="nome" name="nomePaziente" disabled/>
             </div>
         </div>
 
         <div class="row">
-            <div class="input-group col-md-4"> <!-- class="input group" -->
+            <div class="form-group col-md-4"> <!-- class="input group" -->
                 <label for="cognome">Cognome:</label>
             </div>
-            <div class="input-group col-md-4">
+            <div class="form-group col-md-4">
                 <input type="text" id="cognome" name="cognomePaziente" disabled/>
             </div>
         </div>
@@ -81,15 +81,26 @@
 
         <!-- Input per inserire il codice del medico -->
         <div class="row">
-            <div class="input-group col-md-4">
+            <div class="form-group col-md-4">
                 <label for="medicoCodice">Inserisci il Codice del medico da assegnare:</label>
             </div>
-            <div class="input-group col-md-4">
+            <div class="form-group col-md-4">
                 <input type="text" id="idCodiceMedico" name="codiceMedico" required/>
             </div>
         </div>
+        <div class="form-group col-md-4">
+            <button class="btn btn-primary" type="submit">Aggiorna Medico</button>
+        </div>
 
-        <button class="btn btn-primary" type="submit">Aggiorna Medico</button>
+            <!-- Controllo se la il codice medico inserita e' corretto.
+             param.error è settato quando viene fatto il redirect a questa pagina  -->
+            <th:block th:if="${param.error != null}">
+                <div class="alert alert-danger">
+                    <p th:text="${erroreCodiceMedico}"></p>
+<!--                    <p>Spiacente, il codice del medico inserito non esiste.</p>-->
+                </div>
+            </th:block>
+
         </div>
     </form>
 
