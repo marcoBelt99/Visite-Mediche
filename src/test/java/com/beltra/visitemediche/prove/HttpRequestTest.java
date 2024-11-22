@@ -1,4 +1,4 @@
-package com.beltra.visitemediche.prova;
+package com.beltra.visitemediche.prove;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

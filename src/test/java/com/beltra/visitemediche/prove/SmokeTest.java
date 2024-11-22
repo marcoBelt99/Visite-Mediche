@@ -1,4 +1,4 @@
-package com.beltra.visitemediche.prova;
+package com.beltra.visitemediche.prove;
 
 import com.beltra.visitemediche.controller.IndexController;
 import org.junit.jupiter.api.Test;

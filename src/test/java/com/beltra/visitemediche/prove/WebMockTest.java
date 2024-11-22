@@ -1,13 +1,11 @@
-package com.beltra.visitemediche.prova;
+package com.beltra.visitemediche.prove;
 
 import com.beltra.visitemediche.controller.ArticoloController;
-import com.beltra.visitemediche.domain.Articolo;
 import com.beltra.visitemediche.service.ArticoloService;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -19,7 +17,6 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 
@@ -46,13 +43,15 @@ public class WebMockTest {
     @MockBean
     private ArticoloService articoloService;
 
+
     /** Uso di Mockito */
-    @Disabled
+    //@Disabled
     @Test
-    @WithMockUser(username = "admin", roles = {"ADMIN", "USER"})
+    @WithMockUser(username = "Admin", roles = {"ADMIN", "USER"})
     void getArticoliMustReturnListOfAllArticoli() throws Exception {
 
-        when( articoloService.getAllArticoli() ).thenReturn( new ArrayList<>() );
+        when( articoloService.getAllArticoli() )
+        .thenReturn( new ArrayList<>() );
 
         this.mockMvc
                 .perform(get("/articoli"))
@@ -61,7 +60,7 @@ public class WebMockTest {
 
         // con la verify() verifico se c'e' stata effettivamente un'iterazione con il metodo dell'oggetto che sto mockando
         // cioè, verifico che il metodo del service sia stato chiamato
-        verify(articoloService).getAllArticoli();
+        verify( articoloService ).getAllArticoli();
     }
 
 

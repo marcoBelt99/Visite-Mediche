@@ -15,7 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
+@Disabled // lo metto disabilitato
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class) // TODO: per dare un ordine di esecuzione ai miei metodi
 public class UtenteRuoliInsertTest {

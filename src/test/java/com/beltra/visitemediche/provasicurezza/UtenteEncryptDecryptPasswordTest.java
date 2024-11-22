@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Disabled
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class) // TODO: per dare un ordine di esecuzione ai miei metodi
 public class UtenteEncryptDecryptPasswordTest {

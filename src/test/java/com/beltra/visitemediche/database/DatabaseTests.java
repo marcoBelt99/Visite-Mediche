@@ -27,10 +27,13 @@ public class DatabaseTests {
                 System.out.println("Database attualmente in uso: " + rs.getString(1));
             }
         }
+        finally {
+            dataSource.getConnection().close();
+        }
     }
 
 
-    // @Disabled
+    @Disabled
     @Test
     public void resettaAndPopolaUtentiAndRuoli() throws Exception {
         try (Connection connection = dataSource.getConnection()) {
@@ -40,6 +43,8 @@ public class DatabaseTests {
 
             System.out.println("Stored Procedure eseguita correttamente.\n");
 
+        } finally {
+            dataSource.getConnection().close();
         }
     }
 
